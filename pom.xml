@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.python.test</groupId>
+  <artifactId>webapp</artifactId>
+  <packaging>war</packaging>
+  <version>0.1</version>
+  <name>WebAppCal Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-python -->
+<dependency>
+    <groupId>org.apache.flink</groupId>
+    <artifactId>flink-python</artifactId>
+    <version>1.19.0</version>
+    <scope>provided</scope>
+</dependency>
+</project>
