@@ -1,17 +1,18 @@
 pipeline {
     agent any
-stages {
-        stage('Checking source folder existence') {
+
+    stages {
+        stage('Checking source file existence') {
             steps {
-              powershell'''
-              $folderpath=C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Adressbook.zip
-              if (test-path $folderpath) {
-              Write-Host "Folder exists."
-              } else {
-              Write-Host "Folder does not exist."
-              }
-              '''
-              }
+                powershell '''
+                    $folderpath = "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Adressbook.zip"
+                    if (Test-Path $folderpath -PathType Leaf) {
+                        Write-Host "File exists."
+                    } else {
+                        Write-Host "File does not exist."
+                    }
+                '''
             }
-            }
-        }            
+        }
+    }
+}
