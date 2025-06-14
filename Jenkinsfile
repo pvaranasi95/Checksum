@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'CheckSum1_Dir_Path', defaultValue: 'C:\\Path\\To\\Your\\File.zip', description: 'Path to the checksum file1')
-        string(name: 'CheckSum2_Dir_Path', defaultValue: 'C:\\Path\\To\\Your\\File.zip', description: 'Path to the checksum file2')
+        string(name: 'CheckSum1_Dir_Path', description: 'Path to the checksum file1')
+        string(name: 'CheckSum2_Dir_Path', description: 'Path to the checksum file2')
     }
 
     stages {
