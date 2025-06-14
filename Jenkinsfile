@@ -34,8 +34,8 @@ pipeline {
       stage('Compare checksums') {
           steps {
         powershell """
-            // \$file1 = '${params.CheckSum1_Dir_Path}'
-            // \$file2 = '${params.CheckSum2_Dir_Path}'
+            \$file1 = '${params.CheckSum1_Dir_Path}'
+            \$file2 = '${params.CheckSum2_Dir_Path}'
 
             \$hash1 = (Get-FileHash -Path \$file1 -Algorithm SHA256).Hash
             \$hash2 = (Get-FileHash -Path \$file2 -Algorithm SHA256).Hash
