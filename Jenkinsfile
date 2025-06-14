@@ -34,14 +34,14 @@ pipeline {
       stage('Checksum of folderpath1') {
           steps {
               powershell'''
-              \$hash1 = Get-FileHash -Path \$folderpath1 -Algorithm SHA256
+              \$hash1 = Get-FileHash -Path "\$folderpath1" -Algorithm SHA256
               '''
           }
       }
           stage('Checksum of folderpath2') {
           steps {
               powershell'''
-              \$hash2 = Get-FileHash -Path \$folderpath2 -Algorithm SHA256
+              \$hash2 = Get-FileHash -Path "\$folderpath2" -Algorithm SHA256
               '''
           }
       }
