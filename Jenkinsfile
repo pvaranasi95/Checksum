@@ -7,9 +7,9 @@ pipeline {
                 powershell '''
                     $folderpath = "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Adressbook.zip"
                     if (Test-Path $folderpath -PathType Leaf) {
-                        Write-Host "File exists."
+                        Write-Host "$folderpath exists."
                     } else {
-                        Write-Host "File does not exist."
+                        Write-Host "$folderpath does not exist."
                     }
                 '''
             }
