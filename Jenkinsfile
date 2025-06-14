@@ -12,9 +12,9 @@ pipeline {
                 powershell """
                     \$folderpath1 = '${params.CheckSum1_Dir_Path}'
                     if (Test-Path \$folderpath1 -PathType Leaf) {
-                        Write-Host "\$folderpath exists."
+                        Write-Host "\$folderpath1 exists."
                     } else {
-                        Write-Host "\$folderpath does not exist."
+                        Write-Host "\$folderpath1 does not exist."
                     }
                 """
             }
@@ -24,9 +24,9 @@ pipeline {
                 powershell """
                     \$folderpath2 = '${params.CheckSum2_Dir_Path}'
                     if (Test-Path \$folderpath2 -PathType Leaf) {
-                        Write-Host "\$folderpath exists."
+                        Write-Host "\$folderpath2 exists."
                     } else {
-                        Write-Host "\$folderpath does not exist."
+                        Write-Host "\$folderpath2 does not exist."
                     }
                 """
             }
@@ -34,14 +34,14 @@ pipeline {
       stage('Checksum of folderpath1') {
           steps {
               powershell'''
-              /$hash1 = (Get-FileHash -Path '${params.CheckSum1_Dir_Path}' -Algorithm SHA256).Hash
+              /$hash1 = (Get-FileHash -Path \$folderpath1 -Algorithm SHA256).Hash
               '''
           }
       }
           stage('Checksum of folderpath2') {
           steps {
               powershell'''
-              /$hash2 = (Get-FileHash -Path '${params.CheckSum2_Dir_Path}' -Algorithm SHA256).Hash
+              /$hash2 = (Get-FileHash -Path \$folderpath2 -Algorithm SHA256).Hash
               '''
           }
       }
