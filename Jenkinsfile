@@ -11,7 +11,7 @@ pipeline {
             steps {
                 powershell """
                     \$folderpath1 = '${params.CheckSum1_Dir_Path}'
-                    if (Test-Path \$folderpath -PathType Leaf) {
+                    if (Test-Path \$folderpath1 -PathType Leaf) {
                         Write-Host "\$folderpath exists."
                     } else {
                         Write-Host "\$folderpath does not exist."
@@ -23,7 +23,7 @@ pipeline {
             steps {
                 powershell """
                     \$folderpath2 = '${params.CheckSum2_Dir_Path}'
-                    if (Test-Path \$folderpath -PathType Leaf) {
+                    if (Test-Path \$folderpath2 -PathType Leaf) {
                         Write-Host "\$folderpath exists."
                     } else {
                         Write-Host "\$folderpath does not exist."
