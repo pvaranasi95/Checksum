@@ -22,14 +22,14 @@ pipeline {
             }
         }
 
-        stage('Generate checksum file') {
+        stage('Generate checksums and save to file') {
             steps {
                 powershell """
-                    \$hash1 = Get-FileHash -Path '${params.CheckSum1_Dir_Path}' -Algorithm SHA256
-                    \$hash2 = Get-FileHash -Path '${params.CheckSum2_Dir_Path}' -Algorithm SHA256
+                    \$hash1 = (Get-FileHash -Path '${params.CheckSum1_Dir_Path}' -Algorithm SHA256).Hash
+                    \$hash2 = (Get-FileHash -Path '${params.CheckSum2_Dir_Path}' -Algorithm SHA256).Hash
 
-                    "\$('${params.CheckSum1_Dir_Path}')=\$($hash1.Hash)" | Out-File -FilePath "checksums.txt" -Encoding utf8
-                    "\$('${params.CheckSum2_Dir_Path}')=\$($hash2.Hash)" | Out-File -FilePath "checksums.txt" -Append -Encoding utf8
+                    'hash1=' + \$hash1 | Out-File -FilePath 'checksums.txt' -Encoding utf8
+                    'hash2=' + \$hash2 | Out-File -FilePath 'checksums.txt' -Append -Encoding utf8
                 """
             }
         }
@@ -37,14 +37,14 @@ pipeline {
         stage('Compare checksums') {
             steps {
                 script {
-                    def lines = readFile('checksums.txt').readLines()
-                    def hash1 = lines[0].split('=')[1].trim()
-                    def hash2 = lines[1].split('=')[1].trim()
+                    def content = readFile('checksums.txt').readLines()
+                    def h1 = content.find { it.startsWith('hash1=') }?.split('=')[1]?.trim()
+                    def h2 = content.find { it.startsWith('hash2=') }?.split('=')[1]?.trim()
 
-                    echo "Checksum1: ${hash1}"
-                    echo "Checksum2: ${hash2}"
+                    echo "Hash1: ${h1}"
+                    echo "Hash2: ${h2}"
 
-                    if (hash1 == hash2) {
+                    if (h1 && h2 && h1 == h2) {
                         echo "✅ Checksums match"
                     } else {
                         echo "❌ Checksums do NOT match"
@@ -54,7 +54,7 @@ pipeline {
             }
         }
 
-        stage('Archive checksums file') {
+        stage('Archive checksum file') {
             steps {
                 archiveArtifacts artifacts: 'checksums.txt', onlyIfSuccessful: false
             }
