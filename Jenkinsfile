@@ -6,6 +6,11 @@ pipeline {
         string(name: 'CheckSum2_Dir_Path', description: 'Path to the checksum file2')
     }
 
+    environment {
+        CHECKSUM1 = ''
+        CHECKSUM2 = ''
+    }
+
     stages {
         stage('Checking file1 existence') {
             steps {
@@ -15,6 +20,7 @@ pipeline {
                         Write-Host "\$folderpath1 exists."
                     } else {
                         Write-Host "\$folderpath1 does not exist."
+                        exit 1
                     }
                 """
             }
@@ -27,39 +33,40 @@ pipeline {
                         Write-Host "\$folderpath2 exists."
                     } else {
                         Write-Host "\$folderpath2 does not exist."
+                        exit 1
                     }
                 """
             }
         } 
-      stage('Checksum of folderpath1') {
-          steps {
-              powershell'''
-              \$hash1 = Get-FileHash -Path "\$folderpath1" -Algorithm SHA256
-              '''
-          }
-      }
-          stage('Checksum of folderpath2') {
-          steps {
-              powershell'''
-              \$hash2 = Get-FileHash -Path "\$folderpath2" -Algorithm SHA256
-              '''
-          }
-      }
-
-      stage('Compare checksums') {
-          steps {
-        powershell """
-            Write-Host "Hash1: \$hash1"
-            Write-Host "Hash2: \$hash2"
-
-            if (\$hash1 -eq \$hash2) {
-                Write-Host "✅ Checksums match"
-            } else {
-                Write-Host "❌ Checksums do NOT match"
+        stage('Checksum of file1') {
+            steps {
+                powershell """
+                    \$hash = Get-FileHash -Path '${params.CheckSum1_Dir_Path}' -Algorithm SHA256
+                    Write-Host "Checksum1: \$($hash.Hash)"
+                    echo "CHECKSUM1=\$($hash.Hash)" | Out-File -Append -FilePath \$env:GITHUB_ENV
+                """
             }
-        """
-    }
-}
-
+        }
+        stage('Checksum of file2') {
+            steps {
+                powershell """
+                    \$hash = Get-FileHash -Path '${params.CheckSum2_Dir_Path}' -Algorithm SHA256
+                    Write-Host "Checksum2: \$($hash.Hash)"
+                    echo "CHECKSUM2=\$($hash.Hash)" | Out-File -Append -FilePath \$env:GITHUB_ENV
+                """
+            }
+        }
+        stage('Compare checksums') {
+            steps {
+                script {
+                    if (env.CHECKSUM1 == env.CHECKSUM2) {
+                        echo "✅ Checksums match"
+                    } else {
+                        echo "❌ Checksums do NOT match"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
     }
 }
