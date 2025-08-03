@@ -22,18 +22,24 @@ pipeline {
             }
         }
 
-        stage('Calculate checksums') {
+        stage('Generate checksum file') {
+            steps {
+                powershell """
+                    \$hash1 = Get-FileHash -Path '${params.CheckSum1_Dir_Path}' -Algorithm SHA256
+                    \$hash2 = Get-FileHash -Path '${params.CheckSum2_Dir_Path}' -Algorithm SHA256
+
+                    "\$('${params.CheckSum1_Dir_Path}')=\$($hash1.Hash)" | Out-File -FilePath "checksums.txt" -Encoding utf8
+                    "\$('${params.CheckSum2_Dir_Path}')=\$($hash2.Hash)" | Out-File -FilePath "checksums.txt" -Append -Encoding utf8
+                """
+            }
+        }
+
+        stage('Compare checksums') {
             steps {
                 script {
-                    def hash1 = powershell(
-                        script: "Get-FileHash -Path '${params.CheckSum1_Dir_Path}' -Algorithm SHA256 | Select-Object -ExpandProperty Hash",
-                        returnStdout: true
-                    ).trim()
-
-                    def hash2 = powershell(
-                        script: "Get-FileHash -Path '${params.CheckSum2_Dir_Path}' -Algorithm SHA256 | Select-Object -ExpandProperty Hash",
-                        returnStdout: true
-                    ).trim()
+                    def lines = readFile('checksums.txt').readLines()
+                    def hash1 = lines[0].split('=')[1].trim()
+                    def hash2 = lines[1].split('=')[1].trim()
 
                     echo "Checksum1: ${hash1}"
                     echo "Checksum2: ${hash2}"
@@ -45,6 +51,12 @@ pipeline {
                         currentBuild.result = 'FAILURE'
                     }
                 }
+            }
+        }
+
+        stage('Archive checksums file') {
+            steps {
+                archiveArtifacts artifacts: 'checksums.txt', onlyIfSuccessful: false
             }
         }
     }
