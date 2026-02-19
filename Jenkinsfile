@@ -59,5 +59,30 @@ pipeline {
                 archiveArtifacts artifacts: 'checksums.txt', onlyIfSuccessful: false
             }
         }
+        stage('upload to ELK') {
+            steps {
+                script {
+                    def jenkinsBuildData = [
+                job_name: env.JOB_NAME,
+                build_number: env.BUILD_NUMBER.toInteger(),
+                status: currentBuild.currentResult,
+                timestamp: new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC')),
+                duration: currentBuild.duration,
+                url: env.BUILD_URL
+            ]
+
+            def jsonBody = groovy.json.JsonOutput.toJson(jenkinsBuildData)
+            def jsonBodyEscaped = jsonBody.replace('"', '\\"')
+
+            echo "Sending build data to Elasticsearch: ${jsonBody}"
+
+            bat """
+            curl.exe -X POST "http://localhost:9200/jenkins/_doc" ^
+                 -H "Content-Type: application/json" ^
+                 -d "${jsonBodyEscaped}"
+            """
+                }
+            }
+        }
     }
 }
