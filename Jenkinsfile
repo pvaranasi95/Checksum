@@ -6,7 +6,7 @@ pipeline {
     //     string(name: 'CheckSum2_Dir_Path', description: 'Path to the second file')
     // }
 
-    // stages {
+    stages {
     //     stage('Check file existence') {
     //         steps {
     //             powershell """
@@ -85,3 +85,4 @@ pipeline {
             }
         }
     }
+}
