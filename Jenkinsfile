@@ -7,6 +7,11 @@ pipeline {
     // }
 
     stages {
+        stage('echo test') {
+            steps {
+                bat "echo hello"
+            }
+        }
     //     stage('Check file existence') {
     //         steps {
     //             powershell """
